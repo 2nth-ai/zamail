@@ -79,6 +79,10 @@ foreach ($t in $targets) {
 }
 Write-Host "Granted FullAccess on $($targets.Count) mailbox(es): $($targets -join ', ')"
 
+# The mirror reads mail over IMAP, which can be switched off per mailbox.
+$noImap = $targets | Where-Object { -not (Get-CASMailbox -Identity $_).ImapEnabled }
+if ($noImap) { Write-Warning "IMAP is disabled on: $($noImap -join ', '). Enable it with: Set-CASMailbox -Identity <mailbox> -ImapEnabled `$true" }
+
 $settings = @(
     "M365_TENANT_ID=$((Get-MgContext).TenantId)"
     "M365_CLIENT_ID=$($app.AppId)"
