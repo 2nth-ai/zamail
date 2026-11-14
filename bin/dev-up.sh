@@ -21,6 +21,13 @@ $DC exec -T tools sh /zamail/bin/stalwart-setup.sh apply \
 
 $DC exec -T tools python3 /zamail/sync/provision.py
 
+# The edge re-reads the recipient list every 30 seconds. Wait until it accepts mail.
+i=0
+until $DC exec -T tools python3 /zamail/tests/e2e/zt.py rcpt probe@example.net alice@corp.test 2>/dev/null | grep -q '^250'; do
+  i=$((i+1)); [ $i -gt 30 ] && { echo "dev-up: the edge is not accepting mail for alice@corp.test" >&2; exit 1; }
+  sleep 3
+done
+
 cat <<MSG
 
 ZA Mail development stack is up.
