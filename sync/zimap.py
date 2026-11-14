@@ -176,7 +176,10 @@ def copy_mailbox(src, dst, days=None, only_special=None, dry_run=False, log=prin
 
     copied = skipped = failed = 0
     for name, delim, flags in folders(src):
-        if flags & SKIP_SPECIAL or SKIP_NAMES.match(name.split(delim)[-1] if delim else name):
+        # A folder is skipped when it, or any folder above it, is on the skip list
+        # (so "Deleted Items/Old" and "Calendar/Birthdays" are skipped too).
+        parts = name.split(delim) if delim else [name]
+        if flags & SKIP_SPECIAL or any(SKIP_NAMES.match(p) for p in parts):
             continue
         is_inbox = name.upper() == "INBOX"
         if only_special is not None and not is_inbox and not (flags & only_special):
@@ -193,7 +196,10 @@ def copy_mailbox(src, dst, days=None, only_special=None, dry_run=False, log=prin
         try:
             if src.select(q(name), readonly=True)[0] != "OK":
                 continue
-            src_keys = _keys(src, _uids(src, since))
+            src_uids = _uids(src, since)
+            if len(src_uids) > 2000:
+                log(f"  {name}: reading the index of {len(src_uids)} messages (this takes a while)")
+            src_keys = _keys(src, src_uids)
             if not src_keys:
                 continue
             if target not in dst_names:
@@ -209,7 +215,11 @@ def copy_mailbox(src, dst, days=None, only_special=None, dry_run=False, log=prin
                 have = set(_keys(dst, _uids(dst, dst_since)))
             missing = [(k, u) for k, u in src_keys.items() if k not in have]
             skipped += len(src_keys) - len(missing)
-            for k, uid in missing:
+            if len(missing) > 500 and not dry_run:
+                log(f"  {name}: copying {len(missing)} messages")
+            for n, (k, uid) in enumerate(missing, 1):
+                if n % 1000 == 0 and not dry_run:
+                    log(f"  {name}: {n} of {len(missing)}")
                 if dry_run:
                     copied += 1
                     continue
