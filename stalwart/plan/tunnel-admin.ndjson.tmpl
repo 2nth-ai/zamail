@@ -1,0 +1,7 @@
+// Lets the Stalwart web interface be used through an SSH tunnel.
+// The web interface signs in with OAuth and the server only trusts sign-ins that arrive
+// under its own public hostname. Through a tunnel the browser arrives as localhost, which
+// gives "Unable to continue: Unknown client id". These two entries allow that one origin.
+// Variable: TUNNEL_ORIGIN, e.g. http://localhost:8090 (must match the local tunnel port).
+{"@type":"upsert","object":"OAuthClient","matchOn":["clientId"],"value":{"tunnel-admin":{"clientId":"${TUNNEL_ORIGIN}/admin/oauth-client.json","description":"Admin console through a local tunnel","redirectUris":{"${TUNNEL_ORIGIN}/admin/oauth/callback":true},"grantTypes":{"authorizationCode":true,"refreshToken":true},"scopes":{"full":true}}}}
+{"@type":"upsert","object":"OAuthClient","matchOn":["clientId"],"value":{"tunnel-account":{"clientId":"${TUNNEL_ORIGIN}/account/oauth-client.json","description":"Account settings through a local tunnel","redirectUris":{"${TUNNEL_ORIGIN}/account/oauth/callback":true},"grantTypes":{"authorizationCode":true,"refreshToken":true},"scopes":{"full":true}}}}
