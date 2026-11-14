@@ -8,6 +8,9 @@ infrastructure). Each run performs these checks:
   login  get a token from Entra ID and sign in to a canary mailbox over IMAP
          (development: master login to the mock server)
 
+PROBE_CHECKS chooses which to run (default "smtp login"). Use "login" alone on hosts that
+cannot make outbound connections on port 25, such as Google Cloud VMs.
+
 State lives in $ZAMAIL_STATE_DIR:
   probe.json   consecutive failure / success counters and last results
   outage       the outage flag. While it exists the mirror does not run.
@@ -77,7 +80,10 @@ def main():
         st = {"fails": 0, "oks": 0}
 
     results = {}
+    wanted = ENV.get("PROBE_CHECKS", "smtp login").split()
     for name, fn in (("smtp", check_smtp), ("login", check_login)):
+        if name not in wanted:
+            continue
         try:
             fn()
             results[name] = "ok"

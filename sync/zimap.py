@@ -26,9 +26,12 @@ KEEP_FLAGS = {"\\seen", "\\answered", "\\flagged"}
 BATCH = 200
 
 
-def tls_context():
+def tls_context(setting="IMAP_TLS_VERIFY"):
+    """TLS settings. IMAP_TLS_VERIFY governs the Microsoft 365 side and must stay "true" in
+    production. STANDBY_TLS_VERIFY governs the hop to our own standby, which is often
+    reached by a private name that its public certificate does not cover."""
     ctx = ssl.create_default_context()
-    if ENV.get("IMAP_TLS_VERIFY", "true") == "false":
+    if ENV.get(setting, "true") == "false":
         ctx.check_hostname, ctx.verify_mode = False, ssl.CERT_NONE
     return ctx
 
@@ -54,7 +57,7 @@ def connect_exo(user, token=None):
 
 def connect_standby(user):
     """ZA Mail side: the service account opens the mailbox by master login."""
-    c = imaplib.IMAP4_SSL(ENV["STANDBY_HOST"], 993, ssl_context=tls_context(), timeout=120)
+    c = imaplib.IMAP4_SSL(ENV["STANDBY_HOST"], 993, ssl_context=tls_context("STANDBY_TLS_VERIFY"), timeout=120)
     domain = user.rsplit("@", 1)[1]
     c.login(f"{user}%{ENV.get('STANDBY_SVC_USER', 'zamail-svc')}@{domain}", ENV["STANDBY_SVC_PASSWORD"])
     return c

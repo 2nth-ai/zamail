@@ -24,11 +24,25 @@
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(Mandatory)][string]$MailboxGroup,
+    # Either a group whose members get continuity, or an explicit list of mailboxes.
+    [string]$MailboxGroup,
+    [string[]]$Mailbox,
+    # Leave out the Graph directory permissions (use with DIRECTORY_SOURCE=file).
+    [switch]$SkipDirectoryPermissions,
+    # Sign in to Microsoft Graph and Exchange Online first (opens the browser twice).
+    [switch]$Connect,
+    # Write the three settings to this file (mode 600) instead of printing the secret.
+    [string]$OutFile,
     [string]$DisplayName = 'ZA Mail continuity',
     [int]$SecretMonths = 12
 )
 $ErrorActionPreference = 'Stop'
+if (-not $MailboxGroup -and -not $Mailbox) { throw 'Give -MailboxGroup or -Mailbox.' }
+
+if ($Connect) {
+    Connect-MgGraph -Scopes 'Application.ReadWrite.All', 'AppRoleAssignment.ReadWrite.All' -NoWelcome
+    Connect-ExchangeOnline -ShowBanner:$false
+}
 
 $graphSp = Get-MgServicePrincipal -Filter "appId eq '00000003-0000-0000-c000-000000000000'"
 $exoSp   = Get-MgServicePrincipal -Filter "appId eq '00000002-0000-0ff1-ce00-000000000000'"
@@ -37,11 +51,11 @@ function Get-RoleId($sp, $value) {
     if (-not $role) { throw "Application permission '$value' not found on $($sp.DisplayName)." }
     $role.Id
 }
-$wanted = @(
-    @{ Sp = $graphSp; Value = 'User.Read.All' },
-    @{ Sp = $graphSp; Value = 'Group.Read.All' },
-    @{ Sp = $exoSp;   Value = 'IMAP.AccessAsApp' }
-)
+$wanted = @(@{ Sp = $exoSp; Value = 'IMAP.AccessAsApp' })
+if (-not $SkipDirectoryPermissions) {
+    $wanted += @{ Sp = $graphSp; Value = 'User.Read.All' }
+    $wanted += @{ Sp = $graphSp; Value = 'Group.Read.All' }
+}
 
 if (-not $PSCmdlet.ShouldProcess($DisplayName, 'Create app registration, grant permissions and mailbox access')) { return }
 
@@ -57,14 +71,25 @@ $secret = Add-MgApplicationPassword -ApplicationId $app.Id -PasswordCredential @
 
 # Tell Exchange Online about the service principal, then grant it the mailboxes.
 New-ServicePrincipal -AppId $app.AppId -ObjectId $sp.Id -DisplayName $DisplayName | Out-Null
-$members = Get-DistributionGroupMember -Identity $MailboxGroup -ResultSize Unlimited
-foreach ($m in $members) {
-    Add-MailboxPermission -Identity $m.PrimarySmtpAddress -User $sp.Id -AccessRights FullAccess -AutoMapping:$false | Out-Null
+$targets = @($Mailbox)
+if ($MailboxGroup) { $targets += (Get-DistributionGroupMember -Identity $MailboxGroup -ResultSize Unlimited).PrimarySmtpAddress }
+$targets = $targets | Where-Object { $_ } | Sort-Object -Unique
+foreach ($t in $targets) {
+    Add-MailboxPermission -Identity $t -User $sp.Id -AccessRights FullAccess -AutoMapping:$false | Out-Null
 }
+Write-Host "Granted FullAccess on $($targets.Count) mailbox(es): $($targets -join ', ')"
 
-Write-Host "Granted FullAccess on $($members.Count) mailboxes. Re-run the grant loop when the group changes."
-Write-Host ''
-Write-Host 'Put these in the ZA Mail .env file:'
-Write-Host "M365_TENANT_ID=$((Get-MgContext).TenantId)"
-Write-Host "M365_CLIENT_ID=$($app.AppId)"
-Write-Host "M365_CLIENT_SECRET=$($secret.SecretText)"
+$settings = @(
+    "M365_TENANT_ID=$((Get-MgContext).TenantId)"
+    "M365_CLIENT_ID=$($app.AppId)"
+    "M365_CLIENT_SECRET=$($secret.SecretText)"
+)
+if ($OutFile) {
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $OutFile) | Out-Null
+    Set-Content -Path $OutFile -Value $settings
+    if (-not $IsWindows) { chmod 600 $OutFile }
+    Write-Host "Settings written to $OutFile (contains the client secret; keep it private)."
+} else {
+    Write-Host 'Put these in the ZA Mail .env file:'
+    $settings | ForEach-Object { Write-Host $_ }
+}
