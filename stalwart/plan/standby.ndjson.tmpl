@@ -1,9 +1,12 @@
 // ZA Mail standby mail server: base configuration. One JSON object per line.
 // Lines starting with // are comments and are stripped before the plan is applied.
-// Variables: ZAMAIL_PRIMARY_DOMAIN, EDGE_RELAY_HOST, STANDBY_SVC_USER, STANDBY_SVC_PASSWORD
+// Variables: ZAMAIL_PRIMARY_DOMAIN, STANDBY_HOSTNAME, EDGE_RELAY_HOST, STANDBY_SVC_USER, STANDBY_SVC_PASSWORD
 
 // The customer's primary mail domain (created at bootstrap; referenced here as #dom).
 {"@type":"upsert","object":"Domain","matchOn":["name"],"value":{"dom":{"name":"${ZAMAIL_PRIMARY_DOMAIN}"}}}
+
+// The name users and other mail servers know this server by. Kept in step with .env.
+{"@type":"update","object":"SystemSettings","value":{"defaultHostname":"${STANDBY_HOSTNAME}"}}
 
 // Mail to anyone outside the local domains leaves through the ZA Mail edge, so all
 // outage-time mail comes from the same, known IP addresses (the ones in SPF).

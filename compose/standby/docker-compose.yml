@@ -16,7 +16,10 @@ services:
       - standby-etc:/etc/stalwart
       - standby-data:/var/lib/stalwart
     ports:
-      - "443:443"                              # JMAP, CalDAV/CardDAV, ACME, account self-service
+      # JMAP, CalDAV/CardDAV, ACME, account self-service AND the admin console. When the
+      # "proxy" profile publishes webmail on 443, set STANDBY_HTTPS_BIND=127.0.0.1:8443 so
+      # the admin console stays private.
+      - "${STANDBY_HTTPS_BIND:-443}:443"
       - "993:993"                              # IMAP for mail apps
       - "465:465"                              # sending from mail apps
       - "${STANDBY_INTAKE_BIND:?}:25:25"       # mail from the edge; private address only
@@ -37,6 +40,21 @@ services:
       - webmail-db:/var/roundcube/db
     ports:
       - "127.0.0.1:8088:80"                    # put a TLS reverse proxy (Caddy, nginx) in front
+
+  # Optional public front door for webmail only, with an automatic Let's Encrypt
+  # certificate for STANDBY_HOSTNAME. Enable with COMPOSE_PROFILES=proxy in .env.
+  proxy:
+    image: caddy:2-alpine
+    profiles: ["proxy"]
+    restart: unless-stopped
+    environment:
+      STANDBY_HOSTNAME: ${STANDBY_HOSTNAME}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    ports:
+      - "80:80"
+      - "443:443"
 
   tools:
     build: ../tools
@@ -65,3 +83,4 @@ volumes:
   standby-data:
   webmail-db:
   tools-state:
+  caddy-data:

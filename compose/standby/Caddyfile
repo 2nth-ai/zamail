@@ -1,0 +1,7 @@
+# Public front door: webmail only. The mail server's own web port (admin console,
+# account pages, APIs) is deliberately not published here.
+{$STANDBY_HOSTNAME} {
+	encode gzip
+	header Strict-Transport-Security "max-age=31536000"
+	reverse_proxy webmail:80
+}
