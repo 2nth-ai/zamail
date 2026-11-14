@@ -105,5 +105,12 @@ Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) fi
 lists where help is most needed. Report security problems privately as described in
 [SECURITY.md](SECURITY.md).
 
+## Credits
+
+ZA Mail was designed and built with Claude Fable 5.2, Anthropic's AI model, working in
+[Claude Code](https://claude.com/claude-code) under 2nth's direction. The architecture,
+code, tests, documentation and website in the first release were produced that way, and
+the commits carry a `Co-Authored-By: Claude Fable 5.2` line.
+
 ZA Mail is not affiliated with or endorsed by Microsoft. Microsoft 365, Exchange Online,
 Outlook, Teams and Entra ID are trademarks of Microsoft Corporation.

@@ -3,6 +3,9 @@ Copyright 2026 The ZA Mail contributors
 
 This product is licensed under the Apache License, Version 2.0.
 
+The first release was designed and built with Claude Fable 5.2 (Anthropic), working in
+Claude Code under 2nth's direction.
+
 ZA Mail deploys the following programs unmodified, each under its own licence:
   Postfix                 IPL-1.0 / EPL-2.0
   Stalwart server         AGPL-3.0-only (Community edition; no Enterprise features are used)
