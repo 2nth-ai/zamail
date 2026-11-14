@@ -20,7 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # Folders that are never copied: not mail, or mail nobody wants during an outage.
 SKIP_SPECIAL = {"\\trash", "\\junk", "\\drafts", "\\all", "\\noselect", "\\nonexistent"}
 SKIP_NAMES = re.compile(
-    r"^(Deleted Items|Junk Email|Junk Mail|Drafts|Outbox|Conversation History|Sync Issues.*|"
+    r"^(Deleted Items|Junk Email|Junk Mail|Drafts|Outbox|Conversation History|Sync Issues.*|All Mail|"
     r"Calendar.*|Contacts.*|Tasks|Notes|Journal|RSS Feeds|Archive Mailbox.*)$", re.I)
 KEEP_FLAGS = {"\\seen", "\\answered", "\\flagged"}
 BATCH = 200
