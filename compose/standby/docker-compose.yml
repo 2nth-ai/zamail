@@ -1,0 +1,67 @@
+# ZA Mail standby for one customer: mail server, webmail, and the tools container that
+# runs setup, the provisioner, the mirror and the probe. Settings come from ../../.env.
+#
+# First start:  docker compose up -d   then   ../../bin/standby-init.sh
+name: zamail-standby
+services:
+  standby:
+    image: ${STANDBY_IMAGE:-stalwartlabs/stalwart:v1.1.0}
+    init: true
+    restart: unless-stopped
+    hostname: ${STANDBY_HOSTNAME}
+    environment:
+      # Needed for setup and by the tools. Port 8080 is bound to loopback only.
+      STALWART_RECOVERY_ADMIN: "admin:${STANDBY_RECOVERY_PASSWORD}"
+    volumes:
+      - standby-etc:/etc/stalwart
+      - standby-data:/var/lib/stalwart
+    ports:
+      - "443:443"                              # JMAP, CalDAV/CardDAV, ACME, account self-service
+      - "993:993"                              # IMAP for mail apps
+      - "465:465"                              # sending from mail apps
+      - "${STANDBY_INTAKE_BIND:?}:25:25"       # mail from the edge; private address only
+      - "127.0.0.1:8080:8080"                  # admin; reach it through an SSH tunnel
+
+  webmail:
+    image: roundcube/roundcubemail:1.6.11-apache
+    restart: unless-stopped
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: "ssl://standby"
+      ROUNDCUBEMAIL_DEFAULT_PORT: "993"
+      ROUNDCUBEMAIL_SMTP_SERVER: "ssl://standby"
+      ROUNDCUBEMAIL_SMTP_PORT: "465"
+      ROUNDCUBEMAIL_DB_TYPE: "sqlite"
+      ROUNDCUBEMAIL_SKIN: "elastic"
+    volumes:
+      - ./roundcube/zamail.inc.php:/var/roundcube/config/zamail.inc.php:ro
+      - webmail-db:/var/roundcube/db
+    ports:
+      - "127.0.0.1:8088:80"                    # put a TLS reverse proxy (Caddy, nginx) in front
+
+  tools:
+    build: ../tools
+    restart: unless-stopped
+    env_file: ../../.env
+    volumes:
+      - ../..:/zamail:ro
+      - /etc/zamail:/etc/zamail                # shared with the edge on a single-host install
+      - tools-state:/var/lib/zamail
+    command: ["crond", "-f", "-l", "8"]
+    configs:
+      - source: crontab
+        target: /etc/crontabs/root
+
+configs:
+  crontab:
+    content: |
+      # ZA Mail scheduled jobs (container time is UTC)
+      * * * * *     python3 /zamail/probe/probe.py        >> /var/lib/zamail/probe.log 2>&1
+      */10 * * * *  python3 /zamail/sync/mirror.py             >> /var/lib/zamail/mirror.log 2>&1
+      15 23 * * *   python3 /zamail/sync/mirror.py --full      >> /var/lib/zamail/mirror.log 2>&1
+      5 * * * *     python3 /zamail/sync/provision.py     >> /var/lib/zamail/provision.log 2>&1
+
+volumes:
+  standby-etc:
+  standby-data:
+  webmail-db:
+  tools-state:

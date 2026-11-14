@@ -1,0 +1,23 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax checks
+        run: |
+          for f in bin/*.sh tests/e2e/*.sh compose/edge/entrypoint.sh probe/*.sh; do sh -n "$f"; done
+          python3 -m py_compile sync/*.py probe/*.py tests/e2e/zt.py
+      - name: Start the development stack
+        run: bin/dev-up.sh
+      - name: End-to-end tests
+        run: tests/e2e/run.sh
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -f compose/dev/docker-compose.yml logs --no-color --tail 200

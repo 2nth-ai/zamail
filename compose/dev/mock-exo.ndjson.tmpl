@@ -1,0 +1,7 @@
+// DEVELOPMENT ONLY. Configures the mock-exo container that plays Exchange Online.
+{"@type":"upsert","object":"Domain","matchOn":["name"],"value":{"dom":{"name":"corp.test"}}}
+{"@type":"update","object":"SenderAuth","value":{"spfEhloVerify":{"match":{},"else":"disable"},"spfFromVerify":{"match":{},"else":"disable"},"reverseIpVerify":{"match":{},"else":"disable"}}}
+{"@type":"upsert","object":"Account","matchOn":["name"],"value":{"svc":{"@type":"User","name":"zamail-svc","domainId":"#dom","description":"Stands in for app-only OAuth access","roles":{"@type":"Admin"},"credentials":{"0":{"@type":"Password","secret":"${EXO_MASTER_PASSWORD}"}}}}}
+{"@type":"upsert","object":"Account","matchOn":["name"],"value":{"alice":{"@type":"User","name":"alice","domainId":"#dom","description":"Alice Mokoena","roles":{"@type":"User"},"aliases":{"0":{"name":"a.mokoena","domainId":"#dom"}},"credentials":{"0":{"@type":"Password","secret":"dev-Alice-M365-Baobab-31"}}}}}
+{"@type":"upsert","object":"Account","matchOn":["name"],"value":{"bob":{"@type":"User","name":"bob","domainId":"#dom","description":"Bob Naidoo","roles":{"@type":"User"},"credentials":{"0":{"@type":"Password","secret":"dev-Bob-M365-Fynbos-77"}}}}}
+{"@type":"upsert","object":"MailingList","matchOn":["name"],"value":{"team":{"name":"team","domainId":"#dom","description":"Whole team","recipients":{"alice@corp.test":true,"bob@corp.test":true}}}}

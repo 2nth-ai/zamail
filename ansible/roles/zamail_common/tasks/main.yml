@@ -1,0 +1,24 @@
+- name: Install Docker and the Compose plugin
+  ansible.builtin.apt:
+    name: [docker.io, docker-compose-v2, rsync]
+    state: present
+    update_cache: true
+
+- name: Create ZA Mail directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+  loop: ["{{ zamail_dir }}", /etc/zamail, /etc/zamail/tls]
+
+- name: Copy the kit
+  ansible.posix.synchronize:
+    src: "{{ playbook_dir }}/../"
+    dest: "{{ zamail_dir }}/"
+    rsync_opts: ["--exclude=.git", "--exclude=.env", "--exclude=secrets"]
+
+- name: Write the settings file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ zamail_dir }}/.env"
+    mode: "0600"

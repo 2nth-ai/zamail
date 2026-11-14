@@ -1,0 +1,24 @@
+# ZA Mail edge for one customer, one site. Run one of these in each site (JHB and CPT).
+# Settings come from ../../.env (see .env.example).
+name: zamail-edge
+services:
+  edge:
+    build: .
+    restart: unless-stopped
+    hostname: ${EDGE_HOSTNAME}
+    environment:
+      ZAMAIL_DOMAINS: ${ZAMAIL_DOMAINS}
+      EDGE_HOSTNAME: ${EDGE_HOSTNAME}
+      EXO_HOST: ${EXO_HOST}
+      EXO_TLS_LEVEL: ${EXO_TLS_LEVEL:-encrypt}
+      STANDBY_HOSTS: ${STANDBY_HOSTS}
+      TRUSTED_NETS: ${TRUSTED_NETS}
+      QUEUE_LIFETIME: ${QUEUE_LIFETIME:-10d}
+      TLS_CERT: /etc/zamail/tls/fullchain.pem
+      TLS_KEY: /etc/zamail/tls/privkey.pem
+    volumes:
+      - edge-spool:/var/spool/postfix          # the mail queue: must survive restarts
+      - /etc/zamail:/etc/zamail                # recipients list (written by the provisioner) and tls/
+    network_mode: host                         # the MX needs the real client IP and port 25
+volumes:
+  edge-spool:

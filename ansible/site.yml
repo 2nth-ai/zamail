@@ -1,0 +1,12 @@
+# ZA Mail: lay the kit down on a customer's hosts. NOT YET RUN AGAINST REAL HOSTS.
+- hosts: zamail
+  become: true
+  roles: [zamail_common]
+
+- hosts: edge
+  become: true
+  roles: [zamail_edge]
+
+- hosts: standby
+  become: true
+  roles: [zamail_standby]

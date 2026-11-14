@@ -1,0 +1,2 @@
+// An additional mail domain for the same customer. Variable: ZAMAIL_EXTRA_DOMAIN
+{"@type":"upsert","object":"Domain","matchOn":["name"],"value":{"dom-extra":{"name":"${ZAMAIL_EXTRA_DOMAIN}","enable":true,"dkimManagement":{"@type":"Automatic","retireAfter":604800000,"deleteAfter":2592000000,"rotateAfter":7776000000,"selectorTemplate":"v{version}-{algorithm}-{date-%Y%m%d}","algorithms":{"Dkim1Ed25519Sha256":true,"Dkim1RsaSha256":true}},"dnsManagement":{"@type":"Manual"},"certificateManagement":{"@type":"Manual"},"subAddressing":{"@type":"Enabled"}}}}

@@ -1,0 +1,11 @@
+{
+  "users": [
+    {"mail": "alice@corp.test", "displayName": "Alice Mokoena", "aliases": ["a.mokoena@corp.test"],
+     "initialPassword": "dev-Alice-Standby-Protea-58", "mockExoPassword": "dev-Alice-M365-Baobab-31"},
+    {"mail": "bob@corp.test", "displayName": "Bob Naidoo", "aliases": [],
+     "initialPassword": "dev-Bob-Standby-Marula-64", "mockExoPassword": "dev-Bob-M365-Fynbos-77"}
+  ],
+  "lists": [
+    {"mail": "team@corp.test", "displayName": "Whole team", "members": ["alice@corp.test", "bob@corp.test"]}
+  ]
+}

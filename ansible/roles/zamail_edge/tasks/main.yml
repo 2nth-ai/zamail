@@ -1,0 +1,15 @@
+- name: Check the edge TLS certificate is in place
+  ansible.builtin.stat:
+    path: /etc/zamail/tls/fullchain.pem
+  register: edge_cert
+
+- name: Stop if there is no certificate (Exchange Online identifies the edge by it)
+  ansible.builtin.fail:
+    msg: "Install fullchain.pem and privkey.pem for {{ edge_hostname }} in /etc/zamail/tls first."
+  when: not edge_cert.stat.exists
+
+- name: Start the edge
+  ansible.builtin.command:
+    cmd: docker compose --env-file {{ zamail_dir }}/.env up -d --build
+    chdir: "{{ zamail_dir }}/compose/edge"
+  changed_when: true

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZA Mail: a local standby for Microsoft 365 mail</title>
+<meta name="description" content="ZA Mail is a free, open-source standby mail server. It runs beside Microsoft 365 in a South African data centre or on-premise, and keeps your organisation's mail arriving and readable when Microsoft is down.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3F5F2; --sheet:#FFFFFF; --ink:#10272B; --quiet:#4C6266;
+  --kelp:#0F5C63; --amber:#E8A317; --brick:#B8432F; --rule:#C9D2CF;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:clip;background:var(--paper);color:var(--ink);font:400 1.125rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--kelp);text-underline-offset:.18em}
+a:focus-visible,button:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:2px}
+.wrap{max-width:74rem;margin:0 auto;padding:0 1.25rem}
+h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0;letter-spacing:-.02em}
+h1{font-weight:800;font-size:clamp(2.6rem,7.2vw,5.6rem);font-variation-settings:"opsz" 96}
+h2{font-weight:800;font-size:clamp(1.9rem,4vw,3rem);max-width:22ch}
+h3{font-weight:600;font-size:1.3rem;letter-spacing:-.01em}
+p{margin:0;max-width:62ch}
+.lede{font-size:clamp(1.15rem,1.9vw,1.4rem);line-height:1.5;color:var(--ink)}
+
+/* masthead */
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:1.4rem 0}
+.mark{font:800 1.5rem/1 var(--display);letter-spacing:-.03em;color:var(--ink);text-decoration:none}
+.mark span{color:var(--kelp)}
+.mast nav{display:flex;gap:1.4rem;font-size:1rem}
+.mast nav a{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(2rem,5vw,4.5rem);align-items:end;padding:clamp(2rem,6vw,5rem) 0 clamp(3rem,7vw,6rem)}
+.hero .lede{margin-top:1.6rem}
+.acts{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2rem}
+.btn{display:inline-block;font:600 1.05rem/1 var(--display);padding:.95rem 1.3rem;border-radius:3px;text-decoration:none;border:2px solid var(--ink)}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.line{color:var(--ink)}
+.btn:hover{background:var(--kelp);border-color:var(--kelp);color:#fff}
+
+/* the ledger: the page's one loud element */
+.ledger{background:var(--sheet);border:2px solid var(--ink);box-shadow:10px 10px 0 var(--ink)}
+.ledger table{width:100%;border-collapse:collapse;font-size:.95rem;font-variant-numeric:tabular-nums}
+.ledger caption{caption-side:top;text-align:left;font:600 1rem/1.3 var(--display);padding:.9rem 1rem;border-bottom:2px solid var(--ink)}
+.ledger th{font:600 .9rem/1.2 var(--display);text-align:left;padding:.6rem 1rem;border-bottom:1px solid var(--rule);color:var(--quiet)}
+.ledger td{padding:.62rem 1rem;border-bottom:1px solid var(--rule);vertical-align:top}
+.ledger tr:last-child td{border-bottom:0}
+.ledger td:first-child{white-space:nowrap;color:var(--quiet)}
+.ledger .who{display:block;font-weight:700}
+.ledger .what{display:block;color:var(--quiet);font-size:.88rem}
+.st{display:inline-block;font:600 .85rem/1 var(--display);padding:.34rem .5rem;border-radius:2px;white-space:nowrap}
+.st.ok{background:#DDEEE9;color:#0B4A43}
+.st.held{background:#FBEBC6;color:#6B4700}
+.ledger tr.down td{background:#FFF9EC}
+.ledger tr.cut td{padding:.5rem 1rem;background:var(--brick);color:#fff;font:600 .95rem/1.3 var(--display);border-bottom:0}
+.ledger .foot{padding:.75rem 1rem;border-top:2px solid var(--ink);font-size:.86rem;color:var(--quiet)}
+.js .ledger tbody tr{opacity:0;transform:translateY(6px)}
+.js .ledger tbody tr.in{opacity:1;transform:none;transition:opacity .35s ease,transform .35s ease}
+
+/* sections */
+section{padding:clamp(3rem,7vw,6rem) 0;border-top:2px solid var(--ink)}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(1.5rem,5vw,4rem)}
+.split > div > * + *{margin-top:1.1rem}
+.facts{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.facts li{display:grid;grid-template-columns:9.5rem 1fr;gap:1.2rem;padding:1rem 0;border-bottom:1px solid var(--rule)}
+.facts li:first-child{border-top:1px solid var(--rule)}
+.facts b{font:800 1.5rem/1.1 var(--display);letter-spacing:-.02em}
+.src{font-size:.9rem;color:var(--quiet);margin-top:1.2rem}
+
+.steps{list-style:none;margin:2.5rem 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;counter-reset:s;border:2px solid var(--ink);background:var(--sheet)}
+.steps li{padding:1.6rem 1.5rem 1.8rem;counter-increment:s;border-right:2px solid var(--ink)}
+.steps li:last-child{border-right:0}
+.steps li::before{content:counter(s);display:block;font:800 3.2rem/1 var(--display);color:var(--kelp);margin-bottom:.8rem}
+.steps li:nth-child(2){background:#FFF9EC}
+.steps li:nth-child(2)::before{color:var(--brick)}
+.steps p{margin-top:.6rem;font-size:1rem}
+
+.pairs{margin:2.5rem 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.2rem clamp(1.5rem,5vw,4rem)}
+.pairs p{margin-top:.5rem;font-size:1.02rem}
+
+.status{background:var(--ink);color:var(--paper);border-top:0}
+.status h2{color:#fff}
+.status a{color:#9AD7CB}
+.cols{margin-top:2.2rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem}
+.cols h3{color:#fff;padding-bottom:.6rem;border-bottom:2px solid currentColor}
+.cols ul{margin:.9rem 0 0;padding-left:1.1rem;font-size:1rem}
+.cols li + li{margin-top:.45rem}
+.cols .y h3{color:#9AD7CB}.cols .m h3{color:#F4C766}.cols .n h3{color:#F0A696}
+
+pre{margin:1.4rem 0 0;background:var(--ink);color:#E6EFEC;padding:1.1rem 1.2rem;overflow:auto;font:400 .98rem/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;border-radius:3px;max-width:100%}
+.open .acts{margin-top:1.6rem}
+
+footer{border-top:2px solid var(--ink);padding:2rem 0 3rem;font-size:.92rem;color:var(--quiet)}
+footer p + p{margin-top:.6rem}
+
+@media (max-width:860px){
+  .hero,.split{grid-template-columns:1fr}
+  .steps,.cols,.pairs{grid-template-columns:1fr}
+  .steps li{border-right:0;border-bottom:2px solid var(--ink)}
+  .steps li:last-child{border-bottom:0}
+  .ledger{box-shadow:6px 6px 0 var(--ink)}
+  .facts li{grid-template-columns:1fr;gap:.2rem}
+  .mast nav a:not(:last-child){display:none}
+  .ledger td:nth-child(2) .what{display:none}
+  .ledger table{font-size:.86rem}
+  .st{font-size:.78rem;padding:.3rem .38rem}
+  .ledger td,.ledger th{padding-left:.7rem;padding-right:.7rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .ledger tbody tr{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <a class="mark" href="#top" aria-label="ZA Mail home">ZA<span>Mail</span></a>
+    <nav aria-label="Page">
+      <a href="#how">How it works</a>
+      <a href="#status">What is ready</a>
+      <a href="https://github.com/2nth-ai/zamail">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1>Microsoft went down. Your mail does not have to.</h1>
+        <p class="lede">ZA Mail is a free, open-source standby mail server. It runs beside Microsoft 365 in a South African data centre or on your own servers, and keeps your organisation's mail arriving and readable when Microsoft is unavailable.</p>
+        <div class="acts">
+          <a class="btn solid" href="https://github.com/2nth-ai/zamail">Get ZA Mail on GitHub</a>
+          <a class="btn line" href="https://github.com/2nth-ai/zamail/blob/main/docs/design.md">Read the design</a>
+        </div>
+      </div>
+
+      <div class="ledger" role="group" aria-label="Illustration of mail delivery during an outage">
+        <table>
+          <caption>Thursday evening, one inbox, two destinations</caption>
+          <thead><tr><th scope="col">SAST</th><th scope="col">Message</th><th scope="col">Microsoft 365</th><th scope="col">ZA Mail</th></tr></thead>
+          <tbody>
+            <tr><td>19:41</td><td><span class="who">Supplier</span><span class="what">Delivery note 4471</span></td><td><span class="st ok">Delivered</span></td><td><span class="st ok">Delivered</span></td></tr>
+            <tr><td>19:56</td><td><span class="who">Night shift</span><span class="what">Handover notes</span></td><td><span class="st ok">Delivered</span></td><td><span class="st ok">Delivered</span></td></tr>
+            <tr class="cut"><td colspan="4">20:00 &nbsp;Microsoft 365 stops responding</td></tr>
+            <tr class="down"><td>20:07</td><td><span class="who">Client</span><span class="what">Urgent: signed contract</span></td><td><span class="st held">Held for later</span></td><td><span class="st ok">Delivered</span></td></tr>
+            <tr class="down"><td>20:31</td><td><span class="who">Regulator</span><span class="what">Response due Friday</span></td><td><span class="st held">Held for later</span></td><td><span class="st ok">Delivered</span></td></tr>
+            <tr class="down"><td>21:15</td><td><span class="who">On-call doctor</span><span class="what">Rota change tonight</span></td><td><span class="st held">Held for later</span></td><td><span class="st ok">Delivered</span></td></tr>
+          </tbody>
+        </table>
+        <p class="foot">An illustration of how ZA Mail handles mail, not a record of real messages. Held mail is delivered to Microsoft 365 when it returns.</p>
+      </div>
+    </div>
+
+    <section id="outage">
+      <div class="split">
+        <div>
+          <h2>What happened on 12 and 13 November</h2>
+          <p>Microsoft 365 had a global outage that began on Thursday and ran into Friday. Reports peaked just after 20:00 South African time, and Microsoft was still restoring service the next morning.</p>
+          <p>Email was not the only thing that stopped. Teams and SharePoint were on Microsoft's list too, so the usual plan of "message people another way" failed at the same time.</p>
+        </div>
+        <div>
+          <ul class="facts">
+            <li><b>130,000</b><span>Almost this many reports of Outlook problems on Downdetector in the United States alone, at the peak just after 20:00 South African time on Thursday.</span></li>
+            <li><b>Not only email</b><span>Microsoft's list of affected services included Exchange Online, Teams and SharePoint Online.</span></li>
+            <li><b>EX1550543</b><span>Microsoft's incident number. Microsoft said it had no evidence of malicious activity and would publish a report on the cause.</span></li>
+            <li><b>Courts, visas</b><span>A United States federal appeals court was affected, and New Zealand's immigration agency paused visa processing.</span></li>
+          </ul>
+          <p class="src">Source: <a href="https://www.newsweek.com/microsoft-outlook-down-not-working-incident-server-12707459">Newsweek, 13 November 2026</a>, reporting Microsoft's statements and Downdetector figures.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>How ZA Mail keeps mail running</h2>
+      <p class="lede" style="margin-top:1.2rem">ZA Mail does not replace Microsoft 365. Your staff keep using Outlook every day. ZA Mail sits in front, keeps a second copy, and is ready the moment it is needed.</p>
+      <ol class="steps">
+        <li><h3>On a normal day</h3><p>Mail for your organisation arrives at ZA Mail first. It passes every message to Microsoft 365 unchanged and keeps a copy in its own mailbox for that person.</p></li>
+        <li><h3>When Microsoft is down</h3><p>ZA Mail keeps receiving. Staff open ZA Mail in a browser or phone mail app, find their recent mail already there, and read and send as usual. Nothing is switched over.</p></li>
+        <li><h3>When Microsoft is back</h3><p>Mail that was held is delivered to Microsoft 365. Mail your staff sent from ZA Mail is copied into their Outlook Sent Items. Everyone goes back to Outlook.</p></li>
+      </ol>
+
+      <div class="pairs">
+        <div><h3>Sign-in that does not depend on Microsoft</h3><p>ZA Mail has its own passwords and second factor. When Microsoft's sign-in service is the part that fails, your staff can still get in.</p></div>
+        <div><h3>Your mail stays in South Africa</h3><p>Run it in any local data centre or on your own hardware. The standby copy of your organisation's mail never has to leave the country.</p></div>
+        <div><h3>Nothing to switch at 8 p.m.</h3><p>Mail is already flowing to ZA Mail before the outage starts. There is no DNS change to make and nothing to wait for.</p></div>
+        <div><h3>It only ever adds</h3><p>ZA Mail never deletes mail and never alters a message on its way to Microsoft. A half-working Microsoft 365 cannot damage the standby copy.</p></div>
+      </div>
+    </section>
+
+    <section id="who">
+      <div class="split">
+        <div>
+          <h2>Built for organisations that cannot go quiet</h2>
+        </div>
+        <div>
+          <p class="lede">Hospitals and clinics. Municipalities and emergency services. Law firms with court deadlines. Logistics, utilities and financial services. Anyone for whom a night without email is a night without operations.</p>
+          <p>It is also for the IT providers and hosting companies who look after them. ZA Mail gives each organisation its own separate instance, so you can host it for many clients without mixing their mail.</p>
+          <p>ZA Mail covers email. It does not replace Teams, SharePoint or OneDrive.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="status" class="status" style="margin:0 -100vmax;padding-left:100vmax;padding-right:100vmax">
+      <h2>What is ready, stated plainly</h2>
+      <p class="lede" style="margin-top:1.2rem;color:#D8E4E1">ZA Mail is an early release. Here is exactly how far it has been proven.</p>
+      <div class="cols">
+        <div class="y"><h3>Working and tested</h3><ul>
+          <li>Receiving mail for both systems</li>
+          <li>Holding mail while the primary is down, then delivering it once</li>
+          <li>Reading and sending from the standby, with signed outgoing mail</li>
+          <li>Copying outage-time mail back, with no duplicates</li>
+          <li>Outage detection that pauses background sync</li>
+        </ul></div>
+        <div class="m"><h3>Written, not yet proven live</h3><ul>
+          <li>Set-up scripts for a real Microsoft 365 tenant</li>
+          <li>Reading your staff list from Microsoft's directory</li>
+          <li>Deployment to production servers</li>
+        </ul></div>
+        <div class="n"><h3>Not built yet</h3><ul>
+          <li>Calendar and contact sync</li>
+          <li>Warming up sending addresses before an outage</li>
+          <li>Support for Google Workspace as the primary system</li>
+        </ul></div>
+      </div>
+      <p style="margin-top:2rem;color:#D8E4E1">The tested items run end to end in a local test environment against a stand-in for Microsoft 365. We are looking for pilot organisations and hosting partners in South Africa to prove the rest. <a href="https://github.com/2nth-ai/zamail/blob/main/CONTRIBUTING.md">See where help is needed.</a></p>
+    </section>
+
+    <section id="open" class="open">
+      <div class="split">
+        <div>
+          <h2>Free to use, host and extend</h2>
+          <p>ZA Mail is licensed under Apache-2.0. Run it for your own organisation, change it, or offer it to your clients as a service. There is no fee and no licence key.</p>
+          <p>It is assembled from mail software with long track records: Postfix, Stalwart and Roundcube, all open source.</p>
+        </div>
+        <div>
+          <h3>Try it on a laptop</h3>
+          <p style="margin-top:.6rem">You need Docker. This starts ZA Mail with a stand-in for Microsoft 365 and runs the outage tests. No real mail is sent.</p>
+<pre><code>git clone https://github.com/2nth-ai/zamail.git
+cd zamail
+bin/dev-up.sh
+tests/e2e/run.sh</code></pre>
+          <div class="acts">
+            <a class="btn solid" href="https://github.com/2nth-ai/zamail">Open the repository</a>
+            <a class="btn line" href="https://github.com/2nth-ai/zamail/blob/main/docs/runbooks/onboarding.md">Read the onboarding runbook</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>ZA Mail is an independent open-source project. It is not affiliated with or endorsed by Microsoft. Microsoft 365, Exchange Online, Outlook, Teams and SharePoint are trademarks of Microsoft Corporation.</p>
+    <p>Outage figures are as reported on 13 November 2026 and may be revised when Microsoft publishes its incident report.</p>
+  </footer>
+</div>
+
+<script>
+// One orchestrated moment: the ledger fills in row by row, as mail would arrive.
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  document.documentElement.classList.add('js');
+  var rows = document.querySelectorAll('.ledger tbody tr');
+  rows.forEach(function(r, i){
+    setTimeout(function(){ r.classList.add('in'); }, 350 + i * (r.classList.contains('cut') ? 620 : 520));
+  });
+})();
+</script>
+</body>
+</html>

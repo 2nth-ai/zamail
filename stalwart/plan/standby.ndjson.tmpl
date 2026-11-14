@@ -1,0 +1,21 @@
+// ZA Mail standby mail server: base configuration. One JSON object per line.
+// Lines starting with // are comments and are stripped before the plan is applied.
+// Variables: ZAMAIL_PRIMARY_DOMAIN, EDGE_RELAY_HOST, STANDBY_SVC_USER, STANDBY_SVC_PASSWORD
+
+// The customer's primary mail domain (created at bootstrap; referenced here as #dom).
+{"@type":"upsert","object":"Domain","matchOn":["name"],"value":{"dom":{"name":"${ZAMAIL_PRIMARY_DOMAIN}"}}}
+
+// Mail to anyone outside the local domains leaves through the ZA Mail edge, so all
+// outage-time mail comes from the same, known IP addresses (the ones in SPF).
+{"@type":"upsert","object":"MtaRoute","matchOn":["name"],"value":{"route-edge":{"@type":"Relay","name":"edge","description":"Relay external mail via the ZA Mail edge","host":"${EDGE_RELAY_HOST}","port":25,"protocol":"smtp","implicitTls":false,"allowInvalidCerts":true}}}
+{"@type":"update","object":"MtaOutboundStrategy","value":{"route":{"match":{"0":{"if":"is_local_domain(rcpt_domain)","then":"'local'"}},"else":"'edge'"}}}
+
+// Port 25 on the standby only ever receives mail from the edge (it is not published to
+// the internet). The connecting IP is therefore the edge, not the original sender, so
+// SPF and reverse-DNS checks would always be wrong here and are switched off.
+// DKIM and DMARC (by DKIM alignment) are still verified.
+{"@type":"update","object":"SenderAuth","value":{"spfEhloVerify":{"match":{},"else":"disable"},"spfFromVerify":{"match":{},"else":"disable"},"reverseIpVerify":{"match":{},"else":"disable"}}}
+
+// Service account used by the mirror, provisioner and probe. It can open any mailbox
+// by signing in as "user@domain%svc@domain" (master login), so no user password is needed.
+{"@type":"upsert","object":"Account","matchOn":["name"],"value":{"svc":{"@type":"User","name":"${STANDBY_SVC_USER}","domainId":"#dom","description":"ZA Mail service account","roles":{"@type":"Admin"},"credentials":{"0":{"@type":"Password","secret":"${STANDBY_SVC_PASSWORD}"}}}}}

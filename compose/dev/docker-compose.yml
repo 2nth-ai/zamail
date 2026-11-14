@@ -1,0 +1,97 @@
+# Local development stack. Everything ZA Mail needs, plus stand-ins for the outside world:
+#   mock-exo  plays Exchange Online (a second, separate mail server with its own passwords)
+#   internet  plays the rest of the internet for outbound mail (Mailpit: catches everything)
+# Start it with bin/dev-up.sh, not "docker compose up", because the mail servers need a
+# one-time setup step after first boot.
+name: zamail-dev
+
+x-stalwart: &stalwart
+  image: stalwartlabs/stalwart:v1.1.0
+  init: true
+  restart: unless-stopped
+
+services:
+  edge:
+    build: ../edge
+    hostname: mx1.zamail.corp.test
+    environment:
+      ZAMAIL_DOMAINS: "corp.test"
+      EDGE_HOSTNAME: "mx1.zamail.corp.test"
+      EXO_HOST: "172.30.53.30"
+      EXO_TLS_LEVEL: "may"
+      STANDBY_HOSTS: "172.30.53.20"
+      TRUSTED_NETS: "172.30.53.20/32"
+      OUTBOUND_RELAY: "[172.30.53.40]:1025"
+      QUEUE_LIFETIME: "10d"
+    volumes:
+      - edge-spool:/var/spool/postfix
+      - zamail-state:/etc/zamail
+    ports: ["127.0.0.1:2525:25"]
+    networks: { zamail: { ipv4_address: 172.30.53.10 } }
+
+  standby:
+    <<: *stalwart
+    hostname: standby.corp.test
+    environment:
+      STALWART_RECOVERY_ADMIN: "admin:${STANDBY_RECOVERY_PASSWORD:-dev-recovery-Standby-7391}"
+    volumes:
+      - standby-etc:/etc/stalwart
+      - standby-data:/var/lib/stalwart
+    ports: ["127.0.0.1:8081:8080", "127.0.0.1:9993:993", "127.0.0.1:9465:465"]
+    networks: { zamail: { ipv4_address: 172.30.53.20 } }
+
+  webmail:
+    image: roundcube/roundcubemail:1.6.11-apache
+    restart: unless-stopped
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: "ssl://standby"
+      ROUNDCUBEMAIL_DEFAULT_PORT: "993"
+      ROUNDCUBEMAIL_SMTP_SERVER: "ssl://standby"
+      ROUNDCUBEMAIL_SMTP_PORT: "465"
+      ROUNDCUBEMAIL_DB_TYPE: "sqlite"
+      ROUNDCUBEMAIL_SKIN: "elastic"
+    volumes:
+      - ../standby/roundcube/zamail.inc.php:/var/roundcube/config/zamail.inc.php:ro
+      - webmail-db:/var/roundcube/db
+    ports: ["127.0.0.1:8088:80"]
+    networks: { zamail: { ipv4_address: 172.30.53.21 } }
+
+  mock-exo:
+    <<: *stalwart
+    hostname: mock-exo.corp.test
+    environment:
+      STALWART_RECOVERY_ADMIN: "admin:${MOCK_EXO_RECOVERY_PASSWORD:-dev-recovery-MockExo-5528}"
+    volumes:
+      - mock-exo-etc:/etc/stalwart
+      - mock-exo-data:/var/lib/stalwart
+    ports: ["127.0.0.1:8082:8080"]
+    networks: { zamail: { ipv4_address: 172.30.53.30 } }
+
+  internet:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports: ["127.0.0.1:8025:8025"]
+    networks: { zamail: { ipv4_address: 172.30.53.40 } }
+
+  tools:
+    build: ../tools
+    env_file: dev.env
+    volumes:
+      - ../..:/zamail:ro
+      - zamail-state:/etc/zamail
+      - tools-state:/var/lib/zamail
+    networks: { zamail: { ipv4_address: 172.30.53.50 } }
+
+networks:
+  zamail:
+    ipam: { config: [{ subnet: 172.30.53.0/24 }] }
+
+volumes:
+  edge-spool:
+  standby-etc:
+  standby-data:
+  mock-exo-etc:
+  mock-exo-data:
+  webmail-db:
+  zamail-state:
+  tools-state:

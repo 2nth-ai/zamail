@@ -1,0 +1,7 @@
+.env
+*.env.local
+secrets/
+initial-passwords.csv
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,10 @@
+- name: Start the standby, webmail and tools
+  ansible.builtin.command:
+    cmd: docker compose --env-file {{ zamail_dir }}/.env up -d --build
+    chdir: "{{ zamail_dir }}/compose/standby"
+  changed_when: true
+
+- name: Configure the standby and provision accounts (safe to repeat)
+  ansible.builtin.command:
+    cmd: "{{ zamail_dir }}/bin/standby-init.sh"
+  changed_when: true

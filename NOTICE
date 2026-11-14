@@ -1,0 +1,8 @@
+ZA Mail
+Copyright 2026 The ZA Mail contributors
+
+This product is licensed under the Apache License, Version 2.0.
+
+ZA Mail deploys the following programs unmodified, each under its own licence:
+Postfix (IPL-1.0 / EPL-2.0), Stalwart Community (AGPL-3.0), Roundcube (GPL-3.0-or-later),
+Mailpit (MIT, development only).

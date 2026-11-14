@@ -1,0 +1,11 @@
+# Customer settings. Put the three secrets in Ansible Vault, not here.
+zamail_dir: /opt/zamail
+zamail_domains: "corp.co.za"
+zamail_primary_domain: "corp.co.za"
+exo_host: "corp-co-za.mail.protection.outlook.com"
+standby_hostname: "mail.zamail.corp.co.za"
+standby_private_ips: ["10.20.0.20", "10.30.0.20"]
+exo_canary_user: "zamail-canary@corp.co.za"
+m365_tenant_id: ""
+m365_client_id: ""
+# vault: standby_recovery_password, standby_svc_password, m365_client_secret
