@@ -11,6 +11,8 @@ Microsoft is down. Open-source components only.
 - During an outage staff open ZA Mail webmail. Their mail is already there. No DNS change.
 - Sign-in does not depend on Entra ID.
 
+Website: https://2nth-ai.github.io/zamail/
+
 Start with the [design document](docs/design.md). Operating procedures are in
 [docs/runbooks](docs/runbooks/).
 
@@ -87,13 +89,15 @@ Ansible roles are written but have not yet been run against live systems.
 | Component | Licence |
 |---|---|
 | Postfix | IBM Public License 1.0 / Eclipse Public License 2.0 |
-| Stalwart (Community edition) | AGPL-3.0 |
+| Stalwart server (Community edition) | AGPL-3.0-only |
+| Stalwart CLI (inside the tools image) | AGPL-3.0-only |
 | Roundcube | GPL-3.0-or-later |
 | Mailpit (development only) | MIT |
 
 ZA Mail's own code and documentation are licensed under [Apache-2.0](LICENSE). You may
 host it, change it, and offer it as a service, for free. The components above keep their
-own licences; ZA Mail runs them unmodified as separate programs.
+own licences; ZA Mail runs them unmodified as separate programs. If you distribute a
+built image or appliance that contains Stalwart or its CLI, see [NOTICE](NOTICE).
 
 ## Contributing
 

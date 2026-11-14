@@ -4,5 +4,14 @@ Copyright 2026 The ZA Mail contributors
 This product is licensed under the Apache License, Version 2.0.
 
 ZA Mail deploys the following programs unmodified, each under its own licence:
-Postfix (IPL-1.0 / EPL-2.0), Stalwart Community (AGPL-3.0), Roundcube (GPL-3.0-or-later),
-Mailpit (MIT, development only).
+  Postfix                 IPL-1.0 / EPL-2.0
+  Stalwart server         AGPL-3.0-only (Community edition; no Enterprise features are used)
+  Stalwart CLI            AGPL-3.0-only
+  Roundcube               GPL-3.0-or-later
+  Mailpit                 MIT (development stack only)
+
+None of these programs' source code is included in this repository. The Stalwart CLI
+binary is copied into the ZA Mail tools image when you build it (compose/tools/Dockerfile).
+If you distribute a built image, an appliance or a VM that contains Stalwart or its CLI,
+you are distributing AGPL software: pass on its licence and point to its source
+(https://github.com/stalwartlabs/stalwart, https://github.com/stalwartlabs/cli).

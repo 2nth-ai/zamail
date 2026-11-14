@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZA Mail: a local standby for Microsoft 365 mail</title>
 <meta name="description" content="ZA Mail is a free, open-source standby mail server. It runs beside Microsoft 365 in a South African data centre or on-premise, and keeps your organisation's mail arriving and readable when Microsoft is down.">
+<link rel="canonical" href="https://2nth-ai.github.io/zamail/">
+<meta property="og:title" content="ZA Mail: a local standby for Microsoft 365 mail">
+<meta property="og:description" content="Free, open-source standby mail that keeps your organisation's email arriving and readable when Microsoft 365 is down. Host it in South Africa or on-premise.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://2nth-ai.github.io/zamail/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
@@ -106,7 +111,7 @@ footer p + p{margin-top:.6rem}
   .steps li:last-child{border-bottom:0}
   .ledger{box-shadow:6px 6px 0 var(--ink)}
   .facts li{grid-template-columns:1fr;gap:.2rem}
-  .mast nav a:not(:last-child){display:none}
+  .mast nav a:first-child,.mast nav a:nth-child(2){display:none}
   .ledger td:nth-child(2) .what{display:none}
   .ledger table{font-size:.86rem}
   .st{font-size:.78rem;padding:.3rem .38rem}
@@ -125,6 +130,7 @@ footer p + p{margin-top:.6rem}
     <nav aria-label="Page">
       <a href="#how">How it works</a>
       <a href="#status">What is ready</a>
+      <a href="https://2nth.ai">2nth.ai</a>
       <a href="https://github.com/2nth-ai/zamail">GitHub</a>
     </nav>
   </header>
@@ -228,7 +234,7 @@ footer p + p{margin-top:.6rem}
           <li>Support for Google Workspace as the primary system</li>
         </ul></div>
       </div>
-      <p style="margin-top:2rem;color:#D8E4E1">The tested items run end to end in a local test environment against a stand-in for Microsoft 365. We are looking for pilot organisations and hosting partners in South Africa to prove the rest. <a href="https://github.com/2nth-ai/zamail/blob/main/CONTRIBUTING.md">See where help is needed.</a></p>
+      <p style="margin-top:2rem;color:#D8E4E1">The tested items run end to end in a local test environment against a stand-in for Microsoft 365. We are looking for pilot organisations and hosting partners in South Africa to prove the rest. <a href="https://github.com/2nth-ai/zamail/blob/main/CONTRIBUTING.md">See where help is needed</a>, or talk to us at <a href="https://2nth.ai">2nth.ai</a>.</p>
     </section>
 
     <section id="open" class="open">
@@ -255,6 +261,7 @@ tests/e2e/run.sh</code></pre>
   </main>
 
   <footer>
+    <p><strong>ZA Mail is an open-source project from <a href="https://2nth.ai">2nth.ai</a>.</strong> To host it for your organisation or to join the pilot, get in touch through <a href="https://2nth.ai">2nth.ai</a> or open an issue on <a href="https://github.com/2nth-ai/zamail/issues">GitHub</a>.</p>
     <p>ZA Mail is an independent open-source project. It is not affiliated with or endorsed by Microsoft. Microsoft 365, Exchange Online, Outlook, Teams and SharePoint are trademarks of Microsoft Corporation.</p>
     <p>Outage figures are as reported on 13 November 2026 and may be revised when Microsoft publishes its incident report.</p>
   </footer>

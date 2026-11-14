@@ -304,6 +304,11 @@ software, and why the break-glass procedure exists and must be rehearsed.
 4. **Stalwart 1.x is new.** Mitigation: pinned version, kept off the normal-day path,
    upgrades tested in the development stack first.
 5. **Cold sending addresses** during an outage (section 8).
+6. **Stalwart is a single-vendor project.** It is dual-licensed: AGPL-3.0 for the Community
+   edition, a proprietary licence for Enterprise features. ZA Mail uses only the AGPL side
+   and runs it unmodified, so the AGPL places no burden on ZA Mail's own Apache-2.0 code.
+   The vendor could move features between editions in a later release. Mitigation: the
+   version is pinned, and the mailbox server is the replaceable part of the design.
 
 ## 13. Status of this kit
 
