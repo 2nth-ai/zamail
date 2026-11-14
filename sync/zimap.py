@@ -44,12 +44,23 @@ def exo_token():
         return f.read()
 
 
+def xoauth2(conn, user, token):
+    """XOAUTH2 sign-in. When the server refuses, it sends an error as a second challenge and
+    waits for an empty reply; answering with the token again would hang until timeout."""
+    sent = []
+
+    def respond(_challenge):
+        sent.append(1)
+        return f"user={user}\x01auth=Bearer {token}\x01\x01".encode() if len(sent) == 1 else b""
+    conn.authenticate("XOAUTH2", respond)
+
+
 def connect_exo(user, token=None):
     """Microsoft 365 side. EXO_AUTH=oauth in production, master against the development mock."""
     c = imaplib.IMAP4_SSL(ENV.get("EXO_IMAP_HOST", "outlook.office365.com"), 993,
                           ssl_context=tls_context(), timeout=120)
     if ENV.get("EXO_AUTH", "oauth") == "oauth":
-        c.authenticate("XOAUTH2", lambda _: f"user={user}\x01auth=Bearer {token}\x01\x01".encode())
+        xoauth2(c, user, token)
     else:
         c.login(f"{user}%{ENV['EXO_MASTER_USER']}", ENV["EXO_MASTER_PASSWORD"])
     return c

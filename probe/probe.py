@@ -53,7 +53,9 @@ def check_login():
             subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "..", "sync", "get-token.py"),
                             token_file], check=True, timeout=40)
             token = open(token_file).read()
-            c.authenticate("XOAUTH2", lambda _: f"user={user}\x01auth=Bearer {token}\x01\x01".encode())
+            sent = []
+            c.authenticate("XOAUTH2", lambda _: (sent.append(1) or b"") if sent else
+                           (sent.append(1) or f"user={user}\x01auth=Bearer {token}\x01\x01".encode()))
         else:
             c.login(f"{user}%{ENV['EXO_MASTER_USER']}", ENV["EXO_MASTER_PASSWORD"])
         typ, _ = c.select("INBOX", readonly=True)
