@@ -57,7 +57,21 @@ Also checked by hand: a copy the standby refuses does not bounce to the original
 and webmail sign-in works.
 
 These tests use a mock Exchange Online (a second mail server). They do not prove anything
-about a real Microsoft 365 tenant: connectors, OAuth and Graph are untested.
+about a real Microsoft 365 tenant.
+
+## Live pilot
+
+On 14 and 15 November 2026, ZA Mail was connected to one real Microsoft 365 mailbox:
+
+- `exo/New-ZaMailApp.ps1` created the app registration and mailbox permission.
+- The mirror copied 47,633 messages over IMAP with app-only OAuth. None failed, and the
+  message count in every copied folder matched on both sides.
+- The production standby (`compose/standby`) runs on one server (2 vCPU, 4 GB) in Google
+  Cloud's Johannesburg region, with webmail behind an automatic certificate.
+- The mirror runs every 10 minutes and the probe every minute.
+
+Not yet proven live: the edge in front of a real tenant (MX and connector), sending from
+the standby on the public internet, the Graph provisioner, and the Ansible roles.
 
 ## What is in the repository
 
@@ -81,8 +95,9 @@ about a real Microsoft 365 tenant: connectors, OAuth and Graph are untested.
 
 Follow [docs/runbooks/onboarding.md](docs/runbooks/onboarding.md). Be aware of what has
 and has not been proven: section 13 of the design document lists each part. In short, the
-mail path is tested locally; the Microsoft 365 scripts, the Graph provisioner and the
-Ansible roles are written but have not yet been run against live systems.
+mail path is tested locally; copying a live Microsoft 365 mailbox to a production standby
+is proven; the edge in front of a real tenant, the Graph provisioner and the Ansible roles
+have not yet been run against live systems.
 
 ## Licences of the components
 

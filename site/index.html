@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZA Mail: a local standby for Microsoft 365 mail</title>
-<meta name="description" content="ZA Mail is a free, open-source standby mail server. It runs beside Microsoft 365 in a South African data centre or on-premise, and keeps your organisation's mail arriving and readable when Microsoft is down.">
+<meta name="description" content="ZA Mail is a free, open-source standby for Microsoft 365 mail. It keeps a second copy of every mailbox in South Africa, readable when Microsoft is down. Proven on a live mailbox of 47,633 messages.">
 <link rel="canonical" href="https://2nth-ai.github.io/zamail/">
 <meta property="og:title" content="ZA Mail: a local standby for Microsoft 365 mail">
-<meta property="og:description" content="Free, open-source standby mail that keeps your organisation's email arriving and readable when Microsoft 365 is down. Host it in South Africa or on-premise.">
+<meta property="og:description" content="Free, open-source standby for Microsoft 365 mail. A second copy of every mailbox, hosted in South Africa, readable when Microsoft is down. Proven on a live mailbox of 47,633 messages.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://2nth-ai.github.io/zamail/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,6 +89,24 @@ section{padding:clamp(3rem,7vw,6rem) 0;border-top:2px solid var(--ink)}
 .pairs{margin:2.5rem 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.2rem clamp(1.5rem,5vw,4rem)}
 .pairs p{margin-top:.5rem;font-size:1.02rem}
 
+/* proof */
+.proof .facts b{color:var(--kelp)}
+.limits{margin-top:1.6rem;padding:1rem 1.2rem;background:#FFF9EC;border-left:6px solid var(--amber);font-size:1rem;max-width:none}
+.steps.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.steps.two li:nth-child(2){background:var(--sheet)}
+.steps.two li:nth-child(2)::before{color:var(--kelp)}
+.steps .tag{display:inline-block;margin-top:.9rem}
+.reasons{margin:1.1rem 0 0;padding-left:1.1rem}
+.reasons li + li{margin-top:.5rem}
+
+/* parts table */
+.parts{width:100%;border-collapse:collapse;margin-top:2.2rem;background:var(--sheet);border:2px solid var(--ink);font-size:1rem}
+.parts th{font:600 .95rem/1.2 var(--display);text-align:left;padding:.7rem 1rem;border-bottom:2px solid var(--ink)}
+.parts td{padding:.8rem 1rem;border-bottom:1px solid var(--rule);vertical-align:top}
+.parts tr:last-child td{border-bottom:0}
+.parts td:first-child{font-weight:700;width:30%}
+.parts code{font:400 .92rem ui-monospace,SFMono-Regular,Menlo,monospace}
+
 .status{background:var(--ink);color:var(--paper);border-top:0}
 .status h2{color:#fff}
 .status a{color:#9AD7CB}
@@ -106,7 +124,11 @@ footer p + p{margin-top:.6rem}
 
 @media (max-width:860px){
   .hero,.split{grid-template-columns:1fr}
-  .steps,.cols,.pairs{grid-template-columns:1fr}
+  .steps,.steps.two,.cols,.pairs{grid-template-columns:1fr}
+  .parts thead{display:none}
+  .parts td{display:block;width:auto;border-bottom:0;padding:.5rem .9rem}
+  .parts td:first-child{width:auto;padding-top:.9rem}
+  .parts td:last-child{border-bottom:1px solid var(--rule);padding-bottom:.9rem}
   .steps li{border-right:0;border-bottom:2px solid var(--ink)}
   .steps li:last-child{border-bottom:0}
   .ledger{box-shadow:6px 6px 0 var(--ink)}
@@ -128,8 +150,8 @@ footer p + p{margin-top:.6rem}
   <header class="mast">
     <a class="mark" href="#top" aria-label="ZA Mail home">ZA<span>Mail</span></a>
     <nav aria-label="Page">
-      <a href="#how">How it works</a>
-      <a href="#status">What is ready</a>
+      <a href="#proof">The proof</a>
+      <a href="#stalwart">What it is built on</a>
       <a href="https://2nth.ai">2nth.ai</a>
       <a href="https://github.com/2nth-ai/zamail">GitHub</a>
     </nav>
@@ -139,7 +161,8 @@ footer p + p{margin-top:.6rem}
     <div class="hero">
       <div>
         <h1>Microsoft went down. Your mail does not have to.</h1>
-        <p class="lede">ZA Mail is a free, open-source standby mail server. It runs beside Microsoft 365 in a South African data centre or on your own servers, and keeps your organisation's mail arriving and readable when Microsoft is unavailable.</p>
+        <p class="lede">ZA Mail is a free, open-source standby for Microsoft 365 mail. It keeps a second copy of every mailbox on a server in South Africa, so your staff can still read their mail when Microsoft is unavailable.</p>
+        <p style="margin-top:1rem">We proved it on our own Microsoft 365 mailbox first: <a href="#proof">47,633 messages copied, none failed</a>.</p>
         <div class="acts">
           <a class="btn solid" href="https://github.com/2nth-ai/zamail">Get ZA Mail on GitHub</a>
           <a class="btn line" href="https://github.com/2nth-ai/zamail/blob/main/docs/design.md">Read the design</a>
@@ -182,9 +205,52 @@ footer p + p{margin-top:.6rem}
       </div>
     </section>
 
+    <section id="proof" class="proof">
+      <div class="split">
+        <div>
+          <h2>Proven on a real Microsoft 365 mailbox</h2>
+          <p>The day after the outage we connected ZA Mail to our own Microsoft 365 mailbox, the one 2nth runs its business on, and let it copy everything.</p>
+          <p>The mailbox now exists twice: once at Microsoft, and once on a server in Johannesburg that we control. We read it in a browser at an address of our own, with a password and second factor that Microsoft has no part in.</p>
+          <p>Nothing changed for the mailbox at Microsoft. No DNS record was touched and no mail was rerouted.</p>
+        </div>
+        <div>
+          <ul class="facts">
+            <li><b>47,633</b><span>Messages copied from Microsoft 365, across Inbox, Sent Items and folders. None failed. We compared the count in every folder on both sides.</span></li>
+            <li><b>10 minutes</b><span>How often new mail is copied across. The copy has run on this schedule since the first full copy finished.</span></li>
+            <li><b>7,000 an hour</b><span>Roughly the speed of the first full copy. A large mailbox takes an afternoon, not a migration project.</span></li>
+            <li><b>One small server</b><span>Two processor cores and 4 GB of memory, in Google Cloud's Johannesburg region. Mailbox, webmail and scheduled jobs all run on it.</span></li>
+          </ul>
+          <p class="limits"><strong>What this does not prove yet.</strong> This pilot copies mail from Microsoft and lets us read it. It does not yet receive new mail directly or send mail during an outage. Those parts pass our tests against a stand-in for Microsoft 365 and are the next stage of the pilot.</p>
+          <p class="src">Pilot run on 14 and 15 November 2026. One mailbox, one organisation: ours.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="smb">
+      <div class="split">
+        <div>
+          <h2>For a small or medium business, an easy decision</h2>
+        </div>
+        <div>
+          <p class="lede">Your business runs on its mailbox: quotes, invoices, orders, contracts. Today the only copy is at Microsoft. On 12 November that copy was out of reach for a night.</p>
+          <ul class="reasons">
+            <li><strong>Your staff change nothing.</strong> They keep using Outlook. ZA Mail works in the background.</li>
+            <li><strong>It cannot break your mail.</strong> Keeping a copy only reads from Microsoft 365. It never deletes, moves or alters anything there.</li>
+            <li><strong>It needs one small server.</strong> The software is free. There is no licence fee per mailbox.</li>
+            <li><strong>You get a record you control.</strong> The copy keeps mail even after it is deleted in Outlook, in a place you can search.</li>
+            <li><strong>Sign-in is yours.</strong> ZA Mail has its own passwords and second factor, so a Microsoft sign-in failure does not lock you out.</li>
+          </ul>
+        </div>
+      </div>
+      <ol class="steps two">
+        <li><h3>Start with a copy</h3><p>ZA Mail copies every mailbox from Microsoft 365 every 10 minutes. When Microsoft is down, staff open ZA Mail webmail and read everything up to the last copy. No DNS change. Set up in a day.</p><span class="st ok tag">Proven on a live mailbox</span></li>
+        <li><h3>Then add the full standby</h3><p>Put ZA Mail in front of Microsoft 365. Mail reaches both systems as it arrives, so during an outage staff also receive new mail and send replies from ZA Mail.</p><span class="st held tag">Tested in the lab, live pilot next</span></li>
+      </ol>
+    </section>
+
     <section id="how">
-      <h2>How ZA Mail keeps mail running</h2>
-      <p class="lede" style="margin-top:1.2rem">ZA Mail does not replace Microsoft 365. Your staff keep using Outlook every day. ZA Mail sits in front, keeps a second copy, and is ready the moment it is needed.</p>
+      <h2>How the full standby keeps mail running</h2>
+      <p class="lede" style="margin-top:1.2rem">ZA Mail does not replace Microsoft 365. Your staff keep using Outlook every day. In the full standby, ZA Mail sits in front, keeps a second copy, and is ready the moment it is needed.</p>
       <ol class="steps">
         <li><h3>On a normal day</h3><p>Mail for your organisation arrives at ZA Mail first. It passes every message to Microsoft 365 unchanged and keeps a copy in its own mailbox for that person.</p></li>
         <li><h3>When Microsoft is down</h3><p>ZA Mail keeps receiving. Staff open ZA Mail in a browser or phone mail app, find their recent mail already there, and read and send as usual. Nothing is switched over.</p></li>
@@ -202,7 +268,7 @@ footer p + p{margin-top:.6rem}
     <section id="who">
       <div class="split">
         <div>
-          <h2>Built for organisations that cannot go quiet</h2>
+          <h2>Also for organisations that cannot go quiet</h2>
         </div>
         <div>
           <p class="lede">Hospitals and clinics. Municipalities and emergency services. Law firms with court deadlines. Logistics, utilities and financial services. Anyone for whom a night without email is a night without operations.</p>
@@ -212,11 +278,35 @@ footer p + p{margin-top:.6rem}
       </div>
     </section>
 
+    <section id="stalwart">
+      <h2>What ZA Mail is built on, and why</h2>
+      <p class="lede" style="margin-top:1.2rem">The standby mailboxes run on Stalwart, an open-source mail server. We use its free Community edition, unmodified, from Stalwart's own published image.</p>
+      <table class="parts">
+        <thead><tr><th scope="col">What we use from Stalwart</th><th scope="col">What it does in ZA Mail</th></tr></thead>
+        <tbody>
+          <tr><td>Mailbox storage with IMAP and JMAP</td><td>Holds the second copy of every mailbox. Webmail and phone mail apps read from it.</td></tr>
+          <tr><td>Its own directory of accounts</td><td>Passwords, a second sign-in factor and app passwords that live on your server. This is why sign-in keeps working when Microsoft's does not.</td></tr>
+          <tr><td>Sending, with DKIM signing</td><td>Lets staff send from ZA Mail during an outage, with mail signed for your domain.</td></tr>
+          <tr><td>Configuration from text files</td><td>Every ZA Mail server is set up from the same plans in the repository, so a new one is built the same way each time.</td></tr>
+          <tr><td>Web administration</td><td>Accounts and settings are managed in a browser. We keep this off the public internet.</td></tr>
+        </tbody>
+      </table>
+      <div class="pairs">
+        <div><h3>Why Stalwart</h3><p>It is one program where older set-ups need four or five. A standby has to be simple enough to leave alone for months and still work on the night. It is written in Rust, which rules out a whole class of memory-safety faults.</p></div>
+        <div><h3>Which licence</h3><p>The Community edition is licensed under AGPL-3.0, an open-source licence. There is no licence key and no fee. We pin the version, currently 1.1.0, and move up only after our tests pass.</p></div>
+        <div><h3>What we do not use</h3><p>Stalwart also sells an Enterprise edition. ZA Mail uses none of it. One of its features is hosting many organisations in one server; ZA Mail gives each organisation its own separate server instead.</p></div>
+        <div><h3>Where we are careful</h3><p>Stalwart's 1.x line is new. In the full standby, the part that handles your mail on a normal day is Postfix, which has run mail servers since 1998. Stalwart only holds the copy.</p></div>
+      </div>
+      <p style="margin-top:2.2rem">Two more open-source programs complete it: <strong>Postfix</strong> receives mail and passes it on in the full standby, and <strong>Roundcube</strong> is the webmail your staff sign in to. ZA Mail's own code, which copies the mail, detects an outage and sets everything up, is licensed under Apache-2.0.</p>
+    </section>
+
     <section id="status" class="status" style="margin:0 -100vmax;padding-left:100vmax;padding-right:100vmax">
       <h2>What is ready, stated plainly</h2>
       <p class="lede" style="margin-top:1.2rem;color:#D8E4E1">ZA Mail is an early release. Here is exactly how far it has been proven.</p>
       <div class="cols">
         <div class="y"><h3>Working and tested</h3><ul>
+          <li>Copying a full, live Microsoft 365 mailbox: 47,633 messages, none failed</li>
+          <li>Reading that copy in webmail on a production server in Johannesburg</li>
           <li>Receiving mail for both systems</li>
           <li>Holding mail while the primary is down, then delivering it once</li>
           <li>Reading and sending from the standby, with signed outgoing mail</li>
@@ -224,9 +314,10 @@ footer p + p{margin-top:.6rem}
           <li>Outage detection that pauses background sync</li>
         </ul></div>
         <div class="m"><h3>Written, not yet proven live</h3><ul>
-          <li>Set-up scripts for a real Microsoft 365 tenant</li>
+          <li>ZA Mail in front of a real Microsoft 365 tenant</li>
+          <li>Sending from the standby on the public internet</li>
           <li>Reading your staff list from Microsoft's directory</li>
-          <li>Deployment to production servers</li>
+          <li>Automated deployment across two sites</li>
         </ul></div>
         <div class="n"><h3>Not built yet</h3><ul>
           <li>Calendar and contact sync</li>
@@ -234,7 +325,7 @@ footer p + p{margin-top:.6rem}
           <li>Support for Google Workspace as the primary system</li>
         </ul></div>
       </div>
-      <p style="margin-top:2rem;color:#D8E4E1">The tested items run end to end in a local test environment against a stand-in for Microsoft 365. We are looking for pilot organisations and hosting partners in South Africa to prove the rest. <a href="https://github.com/2nth-ai/zamail/blob/main/CONTRIBUTING.md">See where help is needed</a>, or talk to us at <a href="https://2nth.ai">2nth.ai</a>.</p>
+      <p style="margin-top:2rem;color:#D8E4E1">The first two items are proven on a live Microsoft 365 mailbox. The others run end to end in a local test environment against a stand-in for Microsoft 365. We are looking for pilot organisations and hosting partners in South Africa to prove the rest. <a href="https://github.com/2nth-ai/zamail/blob/main/CONTRIBUTING.md">See where help is needed</a>, or talk to us at <a href="https://2nth.ai">2nth.ai</a>.</p>
     </section>
 
     <section id="open" class="open">
@@ -242,7 +333,7 @@ footer p + p{margin-top:.6rem}
         <div>
           <h2>Free to use, host and extend</h2>
           <p>ZA Mail is licensed under Apache-2.0. Run it for your own organisation, change it, or offer it to your clients as a service. There is no fee and no licence key.</p>
-          <p>It is assembled from mail software with long track records: Postfix, Stalwart and Roundcube, all open source.</p>
+          <p>It is assembled from open-source mail software: Postfix, Stalwart and Roundcube. <a href="#stalwart">What we use and why</a>.</p>
         </div>
         <div>
           <h3>Try it on a laptop</h3>
@@ -263,7 +354,7 @@ tests/e2e/run.sh</code></pre>
   <footer>
     <p><strong>ZA Mail is an open-source project from <a href="https://2nth.ai">2nth.ai</a>.</strong> To host it for your organisation or to join the pilot, get in touch through <a href="https://2nth.ai">2nth.ai</a> or open an issue on <a href="https://github.com/2nth-ai/zamail/issues">GitHub</a>.</p>
     <p>Designed and built with <a href="https://www.anthropic.com/claude">Claude Fable 5.2</a>, Anthropic's AI model, working in Claude Code under 2nth's direction.</p>
-    <p>ZA Mail is an independent open-source project. It is not affiliated with or endorsed by Microsoft. Microsoft 365, Exchange Online, Outlook, Teams and SharePoint are trademarks of Microsoft Corporation.</p>
+    <p>ZA Mail is an independent open-source project. It is not affiliated with or endorsed by Microsoft or by Stalwart Labs. Microsoft 365, Exchange Online, Outlook, Teams and SharePoint are trademarks of Microsoft Corporation. Stalwart is a trademark of its owner.</p>
     <p>Outage figures are as reported on 13 November 2026 and may be revised when Microsoft publishes its incident report.</p>
   </footer>
 </div>

@@ -317,9 +317,12 @@ software, and why the break-glass procedure exists and must be rehearsed.
 | Edge, standby, webmail, dual delivery, queueing, outage-time sending | Built. See the README for the current local test results. |
 | Mirror, probe, fail-back | Built. See the README for the current local test results. |
 | Provisioner from a file | Built and used by the development stack. |
-| Provisioner from Microsoft Graph, OAuth token helper | Written, not run against a live tenant. |
-| Exchange Online scripts | Written and syntax-checked, not run against a live tenant. |
-| Ansible roles, production Compose files | Written, not run on real hosts. |
+| OAuth token helper, mirror over IMAP with app-only OAuth | Proven on a live tenant (one mailbox, 47,633 messages, November 2026). |
+| Provisioner from Microsoft Graph | Written, not run against a live tenant. |
+| `exo/New-ZaMailApp.ps1`, `exo/Test-ZaMailApp.ps1` | Proven on a live tenant. |
+| `exo/Set-ZaMailConnector.ps1` | Written and syntax-checked, not run against a live tenant. |
+| Production Compose files for the standby | Running on a real host (one server, webmail public, admin private). |
+| Production Compose files for the edge, Ansible roles | Written, not run on real hosts. |
 | Copying the recipient list from the standby host to separate edge hosts | Not built. On separate hosts, sync `/etc/zamail/recipients` to each edge (for example rsync over SSH after each provisioner run). |
 | Outbound warm-up route, calendar and contact sync, clustered tier | Designed, not built. |
 
